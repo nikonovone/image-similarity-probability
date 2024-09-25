@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "image-similarity-probability"
+version = "0.1.0"
+description = "comparing the similarity of two images"
+authors = ["nikonovone <nikonov.nikita@hotmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pre-commit = "^3.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.group.notebooks]
+optional = true
+
+[tool.poetry.group.notebooks.dependencies]
+matplotlib = "^3.7.1"
+ipywidgets = "^8.0.6"
+ipykernel = "^6.29.5"
+ipyplot = "^1.1.1"
