@@ -1,6 +1,5 @@
 from typing import Dict, List, Optional
 
-import timm
 from lightning import LightningModule
 from torch import Tensor
 from torch.optim import SGD, Adam, AdamW
@@ -11,6 +10,7 @@ from src.utils.metrics import get_metrics
 from src.utils.schedulers import get_cosine_schedule_with_warmup
 from pytorch_metric_learning import losses
 import torch
+from oml.models import ViTExtractor
 
 
 class CompareModel(LightningModule):
@@ -20,14 +20,10 @@ class CompareModel(LightningModule):
         pretrained: bool = True,
         optimizer_params: Optional[OptimizerConfig] = None,
         scheduler_params: Optional[SchedulerConfig] = None,
-        margin: float = 1.0,
+        margin: float = 0.05,
     ):
         super().__init__()
-
-        self.model = timm.create_model(
-            model_name,
-            pretrained=pretrained,
-        )
+        self.model = ViTExtractor.from_pretrained("vits8_dino")
         self.triplet_loss = losses.TripletMarginLoss(
             margin=margin,
         )
@@ -158,7 +154,15 @@ class CompareModel(LightningModule):
         )
         self._valid_loss.reset()
 
-        self.log_dict(self._valid_metrics.compute(), prog_bar=True, on_epoch=True)
+        #! log_dict doesnt work
+        metric = self._valid_metrics.compute()
+        self.log(
+            list(metric.keys())[0],
+            list(metric.values())[0],
+            prog_bar=True,
+            on_epoch=True,
+            logger=True,
+        )
         self._valid_metrics.reset()
 
     def test_step(self, batch: List[Tensor], batch_idx: int) -> Tensor:
@@ -187,7 +191,12 @@ class CompareModel(LightningModule):
 
     def on_test_epoch_end(self) -> None:
         """Log the test metrics at the end of the test epoch."""
-        self.log_dict(self._test_metrics.compute(), on_epoch=True, prog_bar=True)
+        self.log_dict(
+            self._test_metrics.compute(),
+            on_epoch=True,
+            prog_bar=True,
+            logger=True,
+        )
         self._test_metrics.reset()
 
     def configure_optimizers(self):
