@@ -2,15 +2,14 @@ import os
 
 import lightning
 from lightning import Trainer
+from lightning.pytorch import loggers as pl_loggers
 from lightning.pytorch.callbacks import (
     LearningRateMonitor,
     ModelCheckpoint,
     RichProgressBar,
 )
 from torch import set_float32_matmul_precision
-import sys
 
-sys.path.append("D:/Code/Test_tasks/image-similarity-probability")
 from src.callbacks.debug import LogModelSummary, VisualizeBatch
 from src.callbacks.experiment_tracking import (
     ClearMLTracking,
@@ -19,7 +18,6 @@ from src.callbacks.freeze import FeatureExtractorFreezeUnfreeze
 from src.data import DefaultDataModule
 from src.models import CompareModel
 from src.utils import PROJECT_ROOT, ExperimentConfig
-from lightning.pytorch import loggers as pl_loggers
 
 
 def train(cfg: ExperimentConfig):
@@ -56,7 +54,7 @@ def train(cfg: ExperimentConfig):
 
     trainer = Trainer(**dict(cfg.trainer_config), callbacks=callbacks, logger=tb_logger)
     trainer.fit(model=model, datamodule=datamodule)
-    trainer.test(model=model, datamodule=datamodule)
+    trainer.test(model=model, datamodule=datamodule, ckpt_path="best")
 
 
 if __name__ == "__main__":
