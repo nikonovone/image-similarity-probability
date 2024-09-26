@@ -3,4 +3,4 @@ from torchmetrics.retrieval import RetrievalPrecision
 
 
 def get_metrics(**kwargs) -> MetricCollection:
-    return MetricCollection({"RetrievalPrecision": RetrievalPrecision(**kwargs)})
+    return MetricCollection({"retrieval_precision": RetrievalPrecision(**kwargs)})

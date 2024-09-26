@@ -36,7 +36,7 @@ def train(cfg: ExperimentConfig):
         LearningRateMonitor(logging_interval="step"),
         ModelCheckpoint(
             save_top_k=3,
-            monitor="valid_RetrievalPrecision",
+            monitor="valid_retrieval_precision",
             mode="max",
             every_n_epochs=1,
         ),
